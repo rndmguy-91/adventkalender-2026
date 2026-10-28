@@ -1,0 +1,6 @@
+import test from 'node:test';import assert from 'node:assert/strict';import{unlocked,berlinDate}from'../dist/calendar.js';import{files}from'../dist/days.js';import fs from'node:fs';
+test('German midnight, not UTC midnight',()=>{assert.equal(unlocked(1,new Date('2026-11-30T22:59:59Z')),false);assert.equal(unlocked(1,new Date('2026-11-30T23:00:00Z')),true);assert.equal(unlocked(2,new Date('2026-11-30T23:00:00Z')),false)});
+test('last door and continued access',()=>{assert.equal(unlocked(24,new Date('2026-12-23T22:59:59Z')),false);assert.equal(unlocked(24,new Date('2026-12-23T23:00:00Z')),true);assert.equal(unlocked(24,new Date('2027-01-01')),true)});
+test('before Advent all doors locked',()=>{for(let i=1;i<=24;i++)assert.equal(unlocked(i,new Date('2026-10-28')),false)});
+test('all PDFs exist and are PDFs',()=>{assert.equal(files.length,24);assert.equal(new Set(files).size,24);for(const f of files){assert.equal(fs.readFileSync(new URL('../dist/anleitungen/'+f,import.meta.url)).subarray(0,5).toString(),'%PDF-')}});
+test('mixed order includes each day exactly once',async()=>{const{ORDER}=await import('../dist/calendar.js');assert.deepEqual([...ORDER].sort((a,b)=>a-b),Array.from({length:24},(_,i)=>i+1));assert.notDeepEqual(ORDER,[...ORDER].sort((a,b)=>a-b))});
